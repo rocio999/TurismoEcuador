@@ -12,9 +12,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.material3.Button
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(navController: NavHostController) {
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -40,8 +42,10 @@ fun HomeScreen() {
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { }
-        ) {
+            onClick = {
+                navController.navigate("destinos")
+            }
+        ){
             Text("Explorar")
         }
 
