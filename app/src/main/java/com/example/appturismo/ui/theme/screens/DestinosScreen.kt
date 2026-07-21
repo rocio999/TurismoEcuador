@@ -26,7 +26,7 @@ fun DestinosScreen() {
         )
 
         Text(
-            text = "Quilotoa\nCotopaxi\nMontañita"
+            text = "Quilotoa\nCotopaxi\nAtacames\nEsmeraldas\nChimborazo"
         )
 
     }
