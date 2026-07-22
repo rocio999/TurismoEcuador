@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 
 data class Destino(
     val nombre: String,
@@ -21,7 +22,9 @@ data class Destino(
 )
 
 @Composable
-fun DestinosScreen() {
+fun DestinosScreen(
+    navController: NavController
+) {
 
     val destinos = listOf(
         Destino("🏔️ Quilotoa", "Laguna de origen volcánico"),
@@ -47,7 +50,10 @@ fun DestinosScreen() {
             items(destinos) { destino ->
 
                 Card(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        navController.navigate("detalle/${destino.nombre}")
+                    }
                 ) {
 
                     Column(
