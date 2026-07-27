@@ -15,102 +15,89 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.appturismo.R
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.height
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CardDefaults
-import androidx.compose.ui.draw.clip
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.appturismo.ui.theme.viewmodel.DestinoViewModel
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
-data class Destino(
-    val nombre: String,
-    val descripcion: String,
-    val imagen: Int
-)
+import androidx.compose.material3.OutlinedTextField
+
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TopAppBarDefaults
+import com.example.appturismo.ui.theme.components.DestinoCard
+import com.example.appturismo.ui.theme.repository.DestinoRepository
+
+@OptIn(ExperimentalMaterial3Api::class)
 
 @Composable
 fun DestinosScreen(
     navController: NavController
 ) {
+    var textoBusqueda by remember {
+        mutableStateOf("")
+    }
 
-    val destinos = listOf(
-        Destino(
-            "🏔️ Quilotoa",
-            "Laguna de origen volcánico",
-            R.drawable.quilotoa
-        ),
-        Destino(
-            "🌋 Cotopaxi",
-            "Parque Nacional",
-            R.drawable.cotopaxi
-        ),
-        Destino(
-            "🌊 Montañita",
-            "Playa del Ecuador",
-            R.drawable.montanita
-        )
-    )
+    val viewModel: DestinoViewModel = viewModel()
+
+    val destinos = viewModel.obtenerDestinos()
+
+
+
 
     Column(
+
         modifier = Modifier.fillMaxSize()
     ) {
+        CenterAlignedTopAppBar(
+
+            title = {
+                Text("🌎 Guía Turística")
+            },
+
+            colors = TopAppBarDefaults.centerAlignedTopAppBarColors()
+
+        )
 
         Text(
+
             text = "Destinos Turísticos",
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(16.dp)
         )
+
+        OutlinedTextField(
+            value = textoBusqueda,
+            onValueChange = {
+                textoBusqueda = it
+            },
+            label = {
+                Text("Buscar destino")
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        )
+
+        val destinosFiltrados = destinos.filter {
+
+            it.nombre.contains(textoBusqueda, ignoreCase = true) ||
+                    it.descripcion.contains(textoBusqueda, ignoreCase = true)
+
+        }
 
         LazyColumn(
             contentPadding = PaddingValues(8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
-            items(destinos) { destino ->
-
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp),
-                    shape = RoundedCornerShape(20.dp),
-                    elevation = CardDefaults.cardElevation(
-                        defaultElevation = 8.dp
-                    ),
-                    onClick = {
-                        navController.navigate("detalle/${destino.nombre}")
-                    }
-                ) {
-
-                    Column(
-                        modifier = Modifier.padding(16.dp)
-                    )
-                    {
-                    Image(
-                        painter = painterResource(id = destino.imagen),
-                        contentDescription = destino.nombre,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(180.dp)
-                            .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
-                    )
-
-
-                        Text(
-                            text = destino.nombre,
-                            style = MaterialTheme.typography.titleLarge,
-                            modifier = Modifier.padding(top = 8.dp)
-                        )
-
-                        Text(
-                            text = destino.descripcion,
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-
-                    }
-
+            items(destinosFiltrados) { destino ->
+                DestinoCard(
+                    destino = destino,
+                    navController = navController
+                )
                 }
 
             }
@@ -119,4 +106,3 @@ fun DestinosScreen(
 
     }
 
-}
