@@ -11,4 +11,8 @@ class DestinoViewModel : ViewModel() {
         return DestinoRepository.obtenerDestinos()
     }
 
+    fun obtenerDestino(id: Int): Destino? {
+        return DestinoRepository.obtenerDestinoPorId(id)
+    }
+
 }

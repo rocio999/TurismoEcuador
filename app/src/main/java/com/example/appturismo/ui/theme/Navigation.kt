@@ -29,12 +29,13 @@ fun Navigation() {
             DestinosScreen(navController)
         }
 
-        composable("detalle/{nombre}") { backStackEntry ->
+        composable(
+            route = "detalle/{id}"
+        ) { backStackEntry ->
 
-            val nombre = backStackEntry.arguments?.getString("nombre") ?: ""
+            val id = backStackEntry.arguments?.getString("id")?.toIntOrNull() ?: 0
 
-            DetalleDestinoScreen(nombre)
-
+            DetalleDestinoScreen(id)
         }
     }
 }

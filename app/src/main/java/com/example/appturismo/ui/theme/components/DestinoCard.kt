@@ -36,8 +36,7 @@ fun DestinoCard(
             defaultElevation = 8.dp
         ),
         onClick = {
-            navController.navigate("detalle/${destino.nombre}")
-        }
+            navController.navigate("detalle/${destino.id}")        }
     ) {
 
         Column {
