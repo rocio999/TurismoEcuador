@@ -16,16 +16,45 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.appturismo.data.database.model.Destino
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.appturismo.data.database.Favorito
+import com.example.appturismo.viewmodel.FavoritoViewModel
+import android.content.Context
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import com.example.appturismo.data.database.DatabaseProvider
+import com.example.appturismo.data.database.repository.FavoritoRepository
+import com.example.appturismo.viewmodel.FavoritoViewModelFactory
 
 @Composable
 fun DestinoCard(
     destino: Destino,
     navController: NavController
 ) {
+    val context = LocalContext.current
+
+    val database = remember {
+        DatabaseProvider.getDatabase(context)
+    }
+
+    val repository = remember {
+        FavoritoRepository(database.favoritoDao())
+    }
+
+    val favoritoViewModel: FavoritoViewModel = viewModel(
+        factory = FavoritoViewModelFactory(repository)
+    )
 
     var favorito by remember {
         mutableStateOf(false)
     }
+
+    LaunchedEffect(destino.id) {
+        favoritoViewModel.comprobarFavorito(destino.id) { resultado ->
+            favorito = resultado
+        }
+    }
+
 
     Card(
         modifier = Modifier
@@ -73,6 +102,19 @@ fun DestinoCard(
                     IconButton(
                         onClick = {
                             favorito = !favorito
+                            val favoritoDestino = Favorito(
+                                id = destino.id,
+                                nombre = destino.nombre,
+                                provincia = destino.provincia,
+                                categoria = destino.categoria,
+                                imagen = destino.imagen
+                            )
+
+                            if (favorito) {
+                                favoritoViewModel.guardarFavorito(favoritoDestino)
+                            } else {
+                                favoritoViewModel.eliminarFavorito(favoritoDestino)
+                            }
                         }
                     ) {
 

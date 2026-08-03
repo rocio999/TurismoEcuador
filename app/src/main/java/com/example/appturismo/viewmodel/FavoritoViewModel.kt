@@ -40,6 +40,15 @@ class FavoritoViewModel(
         }
 
     }
+    fun comprobarFavorito(id: Int, onResult: (Boolean) -> Unit) {
+
+        viewModelScope.launch {
+
+            val resultado = repository.esFavorito(id)
+
+            onResult(resultado)
+        }
+    }
 
 
 

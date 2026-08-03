@@ -14,6 +14,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Card
+
 @Composable
 fun FavoritosScreen(
     favoritoViewModel: FavoritoViewModel
@@ -33,19 +38,45 @@ fun FavoritosScreen(
             style = MaterialTheme.typography.headlineMedium
         )
 
-        LazyColumn {
+        if (favoritoViewModel.favoritos.isEmpty()) {
 
-            items(favoritoViewModel.favoritos) { favorito ->
+            Text(
+                text = "No tienes destinos favoritos todavía."
+            )
 
-                Text(
-                    text = favorito.nombre,
-                    modifier = Modifier.padding(8.dp)
-                )
+        } else {
 
+            LazyColumn {
+
+                items(favoritoViewModel.favoritos) { favorito ->
+
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                    ) {
+
+                        Column(
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+
+                            Text(
+                                text = favorito.nombre,
+                                style = MaterialTheme.typography.titleLarge
+                            )
+
+                            Text(
+                                text = "📍 ${favorito.provincia}"
+                            )
+
+                            Text(
+                                text = "🏷️ ${favorito.categoria}"
+                            )
+
+                        }
+                    }
+                }
             }
-
         }
-
     }
-
 }
