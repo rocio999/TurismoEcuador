@@ -1,4 +1,4 @@
-package com.example.appturismo.ui.theme.database
+package com.example.appturismo.data.database
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -17,5 +17,8 @@ interface FavoritoDao {
 
     @Query("SELECT * FROM favoritos")
     suspend fun obtenerFavoritos(): List<Favorito>
+
+    @Query("SELECT EXISTS(SELECT 1 FROM favoritos WHERE id = :id)")
+    suspend fun esFavorito(id: Int): Boolean
 
 }

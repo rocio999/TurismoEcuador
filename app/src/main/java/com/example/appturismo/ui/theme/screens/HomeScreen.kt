@@ -48,6 +48,15 @@ fun HomeScreen(navController: NavHostController) {
         ){
             Text("Explorar")
         }
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Button(
+            onClick = {
+                navController.navigate("favoritos")
+            }
+        ) {
+            Text("❤️ Mis Favoritos")
+        }
 
     }
 }

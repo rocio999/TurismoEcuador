@@ -1,4 +1,4 @@
-package com.example.appturismo.ui.theme.model
+package com.example.appturismo.data.database.model
 
 data class Destino(
     val id: Int,

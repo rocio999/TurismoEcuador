@@ -1,8 +1,8 @@
-package com.example.appturismo.ui.theme.repository
+package com.example.appturismo.data.database.repository
 
 
 import com.example.appturismo.R
-import com.example.appturismo.ui.theme.model.Destino
+import com.example.appturismo.data.database.model.Destino
 
 
 object DestinoRepository {

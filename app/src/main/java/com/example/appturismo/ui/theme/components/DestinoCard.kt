@@ -15,7 +15,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.appturismo.ui.theme.model.Destino
+import com.example.appturismo.data.database.model.Destino
 
 @Composable
 fun DestinoCard(

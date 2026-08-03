@@ -1,4 +1,4 @@
-package com.example.appturismo.ui.theme.database
+package com.example.appturismo.data.database
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

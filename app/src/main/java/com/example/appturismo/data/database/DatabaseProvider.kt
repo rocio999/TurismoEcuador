@@ -1,4 +1,4 @@
-package com.example.appturismo.ui.theme.database
+package com.example.appturismo.data.database
 
 import android.content.Context
 import androidx.room.Room

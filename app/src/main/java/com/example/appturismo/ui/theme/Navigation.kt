@@ -8,7 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.appturismo.ui.theme.screens.DestinosScreen
 import com.example.appturismo.ui.theme.screens.HomeScreen
 import com.example.appturismo.ui.theme.screens.DetalleDestinoScreen
-
+import com.example.appturismo.ui.theme.screens.FavoritosScreen
 
 @Composable
 
@@ -27,6 +27,9 @@ fun Navigation() {
 
         composable("destinos") {
             DestinosScreen(navController)
+        }
+        composable("favoritos") {
+            FavoritosScreen()
         }
 
         composable(
