@@ -25,10 +25,10 @@ import androidx.compose.material3.Button
 
 @Composable
 fun DetalleDestinoScreen(
-    id: Int
-) {
+    id: Int,
+    viewModel: DestinoViewModel
+){
 
-    val viewModel: DestinoViewModel = viewModel()
 
     val destino = viewModel.obtenerDestino(id)
 

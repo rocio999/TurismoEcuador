@@ -96,7 +96,8 @@ fun DestinoCard(
 
                     Text(
                         text = destino.nombre,
-                        style = MaterialTheme.typography.titleLarge
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.weight(1f)
                     )
 
                     IconButton(

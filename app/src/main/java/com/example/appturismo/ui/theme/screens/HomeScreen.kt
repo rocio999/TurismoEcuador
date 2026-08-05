@@ -11,13 +11,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.material3.Button
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.appturismo.data.database.remote.ApiTestViewModel
+
 
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
+    val apiTestViewModel: ApiTestViewModel = viewModel()
 
+     LaunchedEffect(Unit) {
+    apiTestViewModel.probarApi()
+}
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,

@@ -1,6 +1,5 @@
 package com.example.appturismo.data.database.remote
 
-
 import retrofit2.http.GET
 import retrofit2.http.Query
 

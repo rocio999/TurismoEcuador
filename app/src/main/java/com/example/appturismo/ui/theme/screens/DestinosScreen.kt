@@ -26,21 +26,28 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import com.example.appturismo.ui.theme.components.DestinoCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 
 @Composable
 fun DestinosScreen(
-    navController: NavController
+    navController: NavController,
+    viewModel: DestinoViewModel
 ) {
     var textoBusqueda by remember {
         mutableStateOf("")
     }
 
-    val viewModel: DestinoViewModel = viewModel()
+    val destinosApi by viewModel.destinosApi.collectAsState()
 
-    val destinos = viewModel.obtenerDestinos()
+    LaunchedEffect(Unit) {
+        viewModel.cargarDestinosApi()
+    }
+
+    val destinos = destinosApi
 
 
 

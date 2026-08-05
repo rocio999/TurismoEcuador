@@ -16,6 +16,8 @@ import com.example.appturismo.data.database.DatabaseProvider
 import com.example.appturismo.data.database.repository.FavoritoRepository
 import com.example.appturismo.viewmodel.FavoritoViewModel
 import com.example.appturismo.viewmodel.FavoritoViewModelFactory
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.appturismo.viewmodel.DestinoViewModel
 
 
 @Composable
@@ -34,7 +36,13 @@ fun Navigation() {
         }
 
         composable("destinos") {
-            DestinosScreen(navController)
+
+            val destinoViewModel: DestinoViewModel = viewModel()
+
+            DestinosScreen(
+                navController = navController,
+                viewModel = destinoViewModel
+            )
         }
         composable("favoritos") {
 
@@ -61,9 +69,22 @@ fun Navigation() {
             route = "detalle/{id}"
         ) { backStackEntry ->
 
-            val id = backStackEntry.arguments?.getString("id")?.toIntOrNull() ?: 0
+            val id = backStackEntry.arguments
+                ?.getString("id")
+                ?.toIntOrNull() ?: 0
 
-            DetalleDestinoScreen(id)
+            val destinosBackStackEntry = remember(backStackEntry) {
+                navController.getBackStackEntry("destinos")
+            }
+
+            val destinoViewModel: DestinoViewModel = viewModel(
+                viewModelStoreOwner = destinosBackStackEntry
+            )
+
+            DetalleDestinoScreen(
+                id = id,
+                viewModel = destinoViewModel
+            )
         }
     }
 }
