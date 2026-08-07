@@ -30,6 +30,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import com.example.appturismo.ui.theme.components.DestinoCard
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.collectAsState
+import com.example.appturismo.viewmodel.EstadoCarga
+
+import androidx.compose.material3.CircularProgressIndicator
+
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 
 @Composable
@@ -48,6 +56,7 @@ fun DestinosScreen(
     }
 
     val destinos = destinosApi
+    val estado by viewModel.estado.collectAsState()
 
 
 
@@ -93,21 +102,60 @@ fun DestinosScreen(
 
         }
 
-        LazyColumn(
-            contentPadding = PaddingValues(8.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
+        val estadoActual = estado
 
-            items(destinosFiltrados) { destino ->
-                DestinoCard(
-                    destino = destino,
-                    navController = navController
-                )
+        when (estadoActual) {
+
+            EstadoCarga.Cargando -> {
+
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
+                ) {
+
+                    CircularProgressIndicator()
+
+                    Text("Cargando destinos...")
                 }
-
             }
+
+            EstadoCarga.Exito -> {
+
+                LazyColumn(
+                    contentPadding = PaddingValues(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+
+                    items(destinosFiltrados) { destino ->
+
+                        DestinoCard(
+                            destino = destino,
+                            navController = navController
+                        )
+                    }
+                }
+            }
+
+            is EstadoCarga.Error -> {
+
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
+                ) {
+
+                    Text("❌ No se pudieron cargar los destinos")
+
+                    Text(
+                        text = estadoActual.mensaje
+                    )
+                }
+            }
+        }
+
 
         }
 
-    }
+        }
+
+
 

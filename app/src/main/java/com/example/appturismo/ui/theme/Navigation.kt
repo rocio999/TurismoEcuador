@@ -18,6 +18,8 @@ import com.example.appturismo.viewmodel.FavoritoViewModel
 import com.example.appturismo.viewmodel.FavoritoViewModelFactory
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.appturismo.viewmodel.DestinoViewModel
+import com.example.appturismo.ui.theme.screens.UbicacionScreen
+import com.example.appturismo.ui.theme.screens.AjustesScreen
 
 
 @Composable
@@ -43,6 +45,10 @@ fun Navigation() {
                 navController = navController,
                 viewModel = destinoViewModel
             )
+
+        }
+        composable("ubicacion") {
+            UbicacionScreen()
         }
         composable("favoritos") {
 
@@ -63,6 +69,9 @@ fun Navigation() {
             FavoritosScreen(
                 favoritoViewModel = favoritoViewModel
             )
+        }
+        composable("ajustes") {
+            AjustesScreen()
         }
 
         composable(
@@ -85,6 +94,7 @@ fun Navigation() {
                 id = id,
                 viewModel = destinoViewModel
             )
+
         }
     }
 }

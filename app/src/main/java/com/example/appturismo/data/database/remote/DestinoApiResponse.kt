@@ -5,5 +5,11 @@ data class DestinoApiResponse(
 )
 
 data class DestinoApiFeature(
-    val attributes: Map<String, Any>
+    val attributes: Map<String, Any>,
+    val geometry: DestinoGeometry?
+)
+
+data class DestinoGeometry(
+    val x: Double?,
+    val y: Double?
 )

@@ -9,5 +9,7 @@ data class Destino(
     val categoria: String,
     val calificacion: Double,
     val imagen: Int,
-    val imagenUrl: String? = null
+    val imagenUrl: String? = null,
+    val latitud: Double,
+    val longitud: Double,
 )
