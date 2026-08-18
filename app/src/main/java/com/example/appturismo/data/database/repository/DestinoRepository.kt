@@ -1,8 +1,8 @@
-
 package com.example.appturismo.data.database.repository
 
 import com.example.appturismo.R
 import com.example.appturismo.data.database.model.Destino
+import com.example.appturismo.data.database.remote.DestinoApiResponse
 import com.example.appturismo.data.database.remote.RetrofitClient
 
 object DestinoRepository {
@@ -14,9 +14,7 @@ object DestinoRepository {
     }
 
     fun obtenerDestinos(): List<Destino> {
-
         return listOf(
-
             Destino(
                 id = 1,
                 nombre = "🏔️ Quilotoa",
@@ -30,7 +28,6 @@ object DestinoRepository {
                 latitud = -0.8600,
                 longitud = -78.9070
             ),
-
             Destino(
                 id = 2,
                 nombre = "🌋 Cotopaxi",
@@ -44,7 +41,6 @@ object DestinoRepository {
                 latitud = -0.6770,
                 longitud = -78.4370
             ),
-
             Destino(
                 id = 3,
                 nombre = "🌊 Montañita",
@@ -61,6 +57,56 @@ object DestinoRepository {
         )
     }
 
-    suspend fun obtenerDestinosApi() =
+    // ============================================================
+    // LLAMADAS A LA API
+    // ============================================================
+
+    suspend fun obtenerDestinosApi(): DestinoApiResponse =
         RetrofitClient.apiService.obtenerDestinos()
+
+    suspend fun obtenerDestinosCercanosApi(
+        latitud: Double,
+        longitud: Double,
+        radioKm: Double = 20.0
+    ): DestinoApiResponse =
+        RetrofitClient.apiService.obtenerDestinosCercanos(
+            geometry = "$longitud,$latitud",
+            distance = radioKm
+        )
+
+    // ============================================================
+    // CÁLCULO DE DISTANCIA HAVERSINE (LOCAL/RESPALDO)
+    // ============================================================
+
+    fun calcularDistanciaKm(
+        lat1: Double, lon1: Double,
+        lat2: Double, lon2: Double
+    ): Double {
+        val radioTierra = 6371.0
+        val dLat = Math.toRadians(lat2 - lat1)
+        val dLon = Math.toRadians(lon2 - lon1)
+        val a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2)
+        val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+        return radioTierra * c
+    }
+    fun obtenerDestinosCercanos(
+        latitud: Double,
+        longitud: Double,
+        radioKm: Double = 100.0
+    ): List<Destino> {
+
+        return obtenerDestinos().filter { destino ->
+
+            val distancia = calcularDistanciaKm(
+                latitud,
+                longitud,
+                destino.latitud,
+                destino.longitud
+            )
+
+            distancia <= radioKm
+        }
+    }
 }
