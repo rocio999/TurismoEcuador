@@ -13,28 +13,53 @@ import kotlinx.coroutines.launch
 
 class DestinoViewModel : ViewModel() {
 
-    private val _destinosApi = MutableStateFlow<List<Destino>>(emptyList())
+    // ============================================================
+    // DESTINOS DE ARC GIS
+    // ============================================================
+
+    private val _destinosApi =
+        MutableStateFlow<List<Destino>>(emptyList())
+
     val destinosApi: StateFlow<List<Destino>> =
         _destinosApi.asStateFlow()
 
-    private val _destinosCercanos = MutableStateFlow<List<Destino>>(emptyList())
+
+    // ============================================================
+    // DESTINOS CERCANOS
+    // ============================================================
+
+    private val _destinosCercanos =
+        MutableStateFlow<List<Destino>>(emptyList())
+
     val destinosCercanos: StateFlow<List<Destino>> =
         _destinosCercanos.asStateFlow()
 
-    private val _estado = MutableStateFlow<EstadoCarga>(EstadoCarga.Cargando)
+
+    // ============================================================
+    // ESTADO
+    // ============================================================
+
+    private val _estado =
+        MutableStateFlow<EstadoCarga>(
+            EstadoCarga.Cargando
+        )
+
     val estado: StateFlow<EstadoCarga> =
         _estado.asStateFlow()
 
+
     // ============================================================
-    // CARGAR TODOS LOS DESTINOS DESDE ARC GIS
+    // CARGAR TODOS LOS DESTINOS
     // ============================================================
 
     fun cargarDestinosApi() {
 
         if (_destinosApi.value.isNotEmpty()) {
+
             println(
                 "DESTINOS YA CARGADOS: ${_destinosApi.value.size}"
             )
+
             return
         }
 
@@ -44,7 +69,9 @@ class DestinoViewModel : ViewModel() {
 
             try {
 
-                println("PASO 1: CARGANDO DESTINOS DE ARC GIS")
+                println(
+                    "PASO 1: CARGANDO DESTINOS DE ARC GIS"
+                )
 
                 val respuesta =
                     DestinoRepository.obtenerDestinosApi()
@@ -72,15 +99,17 @@ class DestinoViewModel : ViewModel() {
                     "ERROR CARGANDO DESTINOS API: ${e.message}"
                 )
 
-                _estado.value = EstadoCarga.Error(
-                    e.message ?: "Error desconocido"
-                )
+                _estado.value =
+                    EstadoCarga.Error(
+                        e.message ?: "Error desconocido"
+                    )
             }
         }
     }
 
+
     // ============================================================
-    // BUSCAR DESTINOS CERCANOS CON ARC GIS
+    // DESTINOS CERCANOS
     // ============================================================
 
     fun cargarDestinosCercanos(
@@ -96,15 +125,11 @@ class DestinoViewModel : ViewModel() {
             try {
 
                 println("====================================")
-                println("BUSCANDO DESTINOS CERCANOS CON ARC GIS")
+                println("BUSCANDO DESTINOS CERCANOS")
                 println("LATITUD: $latitud")
                 println("LONGITUD: $longitud")
                 println("RADIO: $radioKm km")
                 println("====================================")
-
-                // ------------------------------------------------
-                // CONSULTA A ARC GIS
-                // ------------------------------------------------
 
                 val respuesta =
                     DestinoRepository.obtenerDestinosCercanosApi(
@@ -122,10 +147,6 @@ class DestinoViewModel : ViewModel() {
                         )
                     }
 
-                // ------------------------------------------------
-                // SI ARC GIS ENCUENTRA DESTINOS
-                // ------------------------------------------------
-
                 if (destinos.isNotEmpty()) {
 
                     _destinosCercanos.value = destinos
@@ -135,10 +156,6 @@ class DestinoViewModel : ViewModel() {
                     )
 
                 } else {
-
-                    // --------------------------------------------
-                    // RESPALDO LOCAL
-                    // --------------------------------------------
 
                     println(
                         "ARC GIS NO ENCONTRÓ DESTINOS."
@@ -159,8 +176,7 @@ class DestinoViewModel : ViewModel() {
                         destinosLocales
 
                     println(
-                        "DESTINOS LOCALES ENCONTRADOS: " +
-                                destinosLocales.size
+                        "DESTINOS LOCALES: ${destinosLocales.size}"
                     )
                 }
 
@@ -171,10 +187,6 @@ class DestinoViewModel : ViewModel() {
                 println(
                     "ERROR ARC GIS: ${e.message}"
                 )
-
-                // ------------------------------------------------
-                // RESPALDO LOCAL SI FALLA LA API
-                // ------------------------------------------------
 
                 try {
 
@@ -188,23 +200,25 @@ class DestinoViewModel : ViewModel() {
                     _destinosCercanos.value =
                         destinosLocales
 
-                    _estado.value = EstadoCarga.Exito
+                    _estado.value =
+                        EstadoCarga.Exito
 
                     println(
-                        "RESPALDO LOCAL: " +
-                                "${destinosLocales.size} destinos"
+                        "RESPALDO LOCAL: ${destinosLocales.size} destinos"
                     )
 
                 } catch (errorLocal: Exception) {
 
-                    _estado.value = EstadoCarga.Error(
-                        errorLocal.message
-                            ?: "No se pudieron obtener destinos"
-                    )
+                    _estado.value =
+                        EstadoCarga.Error(
+                            errorLocal.message
+                                ?: "No se pudieron obtener destinos"
+                        )
                 }
             }
         }
     }
+
 
     // ============================================================
     // CONVERTIR ARC GIS → DESTINO
@@ -217,42 +231,275 @@ class DestinoViewModel : ViewModel() {
 
         val datos = feature.attributes
 
+
+        // ========================================================
+        // UBICACIÓN
+        // ========================================================
+
         val latitud =
             feature.geometry?.y ?: 0.0
 
         val longitud =
             feature.geometry?.x ?: 0.0
 
+
+        // ========================================================
+        // NOMBRE
+        // ========================================================
+
         val nombreDestino =
-            datos["NOMBRE"]?.toString()
+            datos["NOMBRE"]
+                ?.toString()
+                ?.trim()
+                ?.ifEmpty {
+                    "Sin nombre"
+                }
                 ?: "Sin nombre"
 
-        val nombreMayusculas =
-            nombreDestino.uppercase()
 
-        // --------------------------------------------------------
-        // IMAGEN
-        // --------------------------------------------------------
+        // ========================================================
+        // CATEGORÍA ORIGINAL
+        // ========================================================
 
-        val imagenDestino = when {
+        val categoriaOriginal =
+            datos["CATEGORIA"]
+                ?.toString()
+                ?.trim()
+                ?.ifEmpty {
+                    "Sin categoría"
+                }
+                ?: "Sin categoría"
 
-            nombreMayusculas.contains("QUILOTOA") ->
-                R.drawable.quilotoa
 
-            nombreMayusculas.contains("COTOPAXI") ->
-                R.drawable.cotopaxi
+        // ========================================================
+        // DESCRIPCIÓN
+        // ========================================================
 
-            nombreMayusculas.contains("MONTAÑITA") ||
-                    nombreMayusculas.contains("MONTANITA") ->
-                R.drawable.montanita
+        val descripcion =
+            datos["TIPO"]
+                ?.toString()
+                ?.trim()
+                ?.ifEmpty {
+                    "Destino turístico"
+                }
+                ?: "Destino turístico"
 
-            else ->
-                R.drawable.quilotoa
+
+        val descripcionCompleta =
+            datos["DESCRIPCIO"]
+                ?.toString()
+                ?.trim()
+                ?.ifEmpty {
+                    "Sin descripción disponible"
+                }
+                ?: "Sin descripción disponible"
+
+
+        // ========================================================
+        // NORMALIZAR TODO EL TEXTO
+        // ========================================================
+
+        val textoDestino =
+            normalizarTexto(
+                nombreDestino + " " +
+                        categoriaOriginal + " " +
+                        descripcion + " " +
+                        descripcionCompleta
+            )
+
+
+        val categoriaNormalizada =
+            normalizarTexto(
+                categoriaOriginal
+            )
+
+
+        // ========================================================
+        // DETERMINAR CATEGORÍA REAL
+        // ========================================================
+
+        val categoriaFinal = when {
+
+            // ----------------------------------------------------
+            // LAGUNA
+            // ----------------------------------------------------
+
+            textoDestino.contains("LAGUNA") ||
+                    textoDestino.contains("LAGO") -> {
+
+                "Laguna"
+            }
+
+
+            // ----------------------------------------------------
+            // PLAYA
+            // ----------------------------------------------------
+
+            textoDestino.contains("PLAYA") ||
+                    textoDestino.contains("BALNEARIO") -> {
+
+                "Playa"
+            }
+
+
+            // ----------------------------------------------------
+            // MONTAÑA
+            // ----------------------------------------------------
+
+            textoDestino.contains("MONTANA") ||
+                    textoDestino.contains("VOLCAN") ||
+                    textoDestino.contains("CERRO") ||
+                    textoDestino.contains("NEVADO") -> {
+
+                "Montaña"
+            }
+
+
+            // ----------------------------------------------------
+            // FOLKLORE
+            // ----------------------------------------------------
+
+            categoriaNormalizada.contains("FOLKLORE") ||
+                    categoriaNormalizada.contains("FOLCLOR") ||
+                    textoDestino.contains("FOLKLORE") ||
+                    textoDestino.contains("FOLCLOR") -> {
+
+                "Folklore"
+            }
+
+
+            // ----------------------------------------------------
+            // EVENTOS
+            // ----------------------------------------------------
+
+            categoriaNormalizada.contains("EVENTO") ||
+                    categoriaNormalizada.contains("ACONTECIMIENTO") ||
+                    categoriaNormalizada.contains(
+                        "ACONTECIMIENTOS PROGRAMADOS"
+                    ) ||
+                    textoDestino.contains("EVENTO") ||
+                    textoDestino.contains("ACONTECIMIENTO") ||
+                    textoDestino.contains(
+                        "ACONTECIMIENTOS PROGRAMADOS"
+                    ) -> {
+
+                "Eventos"
+            }
+
+
+            // ----------------------------------------------------
+            // RECREACIÓN
+            // ----------------------------------------------------
+
+            categoriaNormalizada.contains("RECREACION") ||
+                    categoriaNormalizada.contains("ESPARCIMIENTO") ||
+                    categoriaNormalizada.contains(
+                        "CENTRO O LUGAR DE ESPARCIMIENTO"
+                    ) ||
+                    categoriaNormalizada.contains(
+                        "CENTRO DE ESPARCIMIENTO"
+                    ) ||
+                    textoDestino.contains("RECREACION") ||
+                    textoDestino.contains("ESPARCIMIENTO") ||
+                    textoDestino.contains(
+                        "CENTRO O LUGAR DE ESPARCIMIENTO"
+                    ) -> {
+
+                "Recreación"
+            }
+
+
+            // ----------------------------------------------------
+            // CULTURA
+            // ----------------------------------------------------
+
+            categoriaNormalizada.contains("CULTURA") ||
+                    categoriaNormalizada.contains("MUSEO") ||
+                    categoriaNormalizada.contains(
+                        "REALIZACIONES TECNICAS"
+                    ) ||
+                    textoDestino.contains("MUSEO") ||
+                    textoDestino.contains("CULTURA") -> {
+
+                "Cultura"
+            }
+
+
+            // ----------------------------------------------------
+            // NATURALEZA
+            // ----------------------------------------------------
+
+            categoriaNormalizada.contains("NATURALEZA") ||
+                    categoriaNormalizada.contains(
+                        "SITIOS NATURALES"
+                    ) ||
+                    textoDestino.contains("NATURALEZA") -> {
+
+                "Naturaleza"
+            }
+
+
+            // ----------------------------------------------------
+            // POR DEFECTO
+            // ----------------------------------------------------
+
+            else -> {
+
+                "Naturaleza"
+            }
         }
 
-        // --------------------------------------------------------
+
+        // ========================================================
+        // IMAGEN SEGÚN CATEGORÍA
+        // ========================================================
+
+        val imagenDestino = when (categoriaFinal) {
+
+            "Laguna" ->
+                R.drawable.laguna
+
+            "Montaña" ->
+                R.drawable.montana
+
+            "Playa" ->
+                R.drawable.playa
+
+            "Naturaleza" ->
+                R.drawable.naturaleza
+
+            "Cultura" ->
+                R.drawable.cultura
+
+            "Folklore" ->
+                R.drawable.folklore
+
+            "Eventos" ->
+                R.drawable.evento
+
+            "Recreación" ->
+                R.drawable.recreacion
+
+            else ->
+                R.drawable.naturaleza
+        }
+
+
+        // ========================================================
+        // LOG
+        // ========================================================
+
+        println("====================================")
+        println("DESTINO: $nombreDestino")
+        println("CATEGORÍA ORIGINAL: $categoriaOriginal")
+        println("CATEGORÍA FINAL: $categoriaFinal")
+        println("IMAGEN: $imagenDestino")
+        println("====================================")
+
+
+        // ========================================================
         // ID
-        // --------------------------------------------------------
+        // ========================================================
 
         val idGenerado =
             datos["OBJECTID"]
@@ -263,39 +510,77 @@ class DestinoViewModel : ViewModel() {
                     ?.toIntOrNull()
                 ?: (index + 1000)
 
+
+        // ========================================================
+        // PROVINCIA
+        // ========================================================
+
+        val provinciaDestino =
+            datos["PROVINCIA"]
+                ?.toString()
+                ?.trim()
+                ?.ifEmpty {
+                    "Sin provincia"
+                }
+                ?: "Sin provincia"
+
+
+        // ========================================================
+        // CREAR DESTINO
+        // ========================================================
+
         return Destino(
 
             id = idGenerado,
 
             nombre = nombreDestino,
 
-            descripcion =
-                datos["TIPO"]?.toString()
-                    ?: "Destino turístico",
+            descripcion = descripcion,
 
             descripcioncompleta =
-                datos["DESCRIPCIO"]?.toString()
-                    ?: "Sin descripción disponible",
+                descripcionCompleta,
 
             provincia =
-                datos["PROVINCIA"]?.toString()
-                    ?: "Sin provincia",
+                provinciaDestino,
 
             categoria =
-                datos["CATEGORIA"]?.toString()
-                    ?: "Sin categoría",
+                categoriaFinal,
 
             calificacion = 0.0,
 
-            imagen = imagenDestino,
+            imagen =
+                imagenDestino,
 
             imagenUrl = null,
 
-            latitud = latitud,
+            latitud =
+                latitud,
 
-            longitud = longitud
+            longitud =
+                longitud
         )
     }
+
+
+    // ============================================================
+    // FUNCIÓN PARA NORMALIZAR TEXTO
+    // ============================================================
+
+    private fun normalizarTexto(
+        texto: String
+    ): String {
+
+        return texto
+            .trim()
+            .uppercase()
+            .replace("Á", "A")
+            .replace("É", "E")
+            .replace("Í", "I")
+            .replace("Ó", "O")
+            .replace("Ú", "U")
+            .replace("Ü", "U")
+    }
+
 
     // ============================================================
     // DESTINOS LOCALES
@@ -306,11 +591,14 @@ class DestinoViewModel : ViewModel() {
         return DestinoRepository.obtenerDestinos()
     }
 
+
     // ============================================================
     // OBTENER DESTINO POR ID
     // ============================================================
 
-    fun obtenerDestino(id: Int): Destino? {
+    fun obtenerDestino(
+        id: Int
+    ): Destino? {
 
         return _destinosApi.value.find {
             it.id == id
@@ -318,9 +606,12 @@ class DestinoViewModel : ViewModel() {
             ?: _destinosCercanos.value.find {
                 it.id == id
             }
-            ?: DestinoRepository.obtenerDestinoPorId(id)
+            ?: DestinoRepository.obtenerDestinoPorId(
+                id
+            )
     }
 }
+
 
 // ================================================================
 // ESTADO DE CARGA

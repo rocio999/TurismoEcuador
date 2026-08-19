@@ -1,6 +1,5 @@
 package com.example.appturismo.ui.theme.screens
 
-
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,12 +13,13 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.ui.platform.LocalContext
 import com.example.appturismo.data.database.datastore.PreferenciasDataStore
 import com.example.appturismo.viewmodel.PreferenciasViewModel
 import com.example.appturismo.viewmodel.PreferenciasViewModelFactory
@@ -29,7 +29,9 @@ fun AjustesScreen() {
 
     val context = LocalContext.current
 
-    val preferenciasDataStore = PreferenciasDataStore(context)
+    val preferenciasDataStore = remember {
+        PreferenciasDataStore(context)
+    }
 
     val preferenciasViewModel: PreferenciasViewModel = viewModel(
         factory = PreferenciasViewModelFactory(
@@ -70,18 +72,20 @@ fun AjustesScreen() {
                 )
 
                 Text(
-                    text = if (modoOscuro)
+                    text = if (modoOscuro) {
                         "Activado"
-                    else
+                    } else {
                         "Desactivado"
+                    }
                 )
             }
 
             Switch(
                 checked = modoOscuro,
-                onCheckedChange = {
+                onCheckedChange = { activado ->
+
                     preferenciasViewModel
-                        .cambiarModoOscuro(it)
+                        .cambiarModoOscuro(activado)
                 }
             )
         }

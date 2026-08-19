@@ -1,55 +1,154 @@
 package com.example.appturismo.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.example.appturismo.data.database.repository.FavoritoRepository
-import com.example.appturismo.data.database.Favorito
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
+import com.example.appturismo.data.database.Favorito
+import com.example.appturismo.data.database.repository.FavoritoRepository
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import kotlinx.coroutines.launch
 
 class FavoritoViewModel(
     private val repository: FavoritoRepository
-
 ) : ViewModel() {
-    val favoritos: SnapshotStateList<Favorito> = mutableStateListOf()
-    fun guardarFavorito(favorito: Favorito) {
 
-        viewModelScope.launch {
-            repository.guardarFavorito(favorito)
-        }
+    // ============================================================
+    // LISTA DE FAVORITOS
+    // ============================================================
 
-    }
-    fun eliminarFavorito(favorito: Favorito) {
+    val favoritos: SnapshotStateList<Favorito> =
+        mutableStateListOf()
 
-        viewModelScope.launch {
-            repository.eliminarFavorito(favorito)
-        }
 
-    }
+    // ============================================================
+    // CARGAR FAVORITOS
+    // ============================================================
+
     fun cargarFavoritos() {
 
         viewModelScope.launch {
 
-            favoritos.clear()
+            try {
 
-            favoritos.addAll(
-                repository.obtenerFavoritos()
-            )
+                val lista =
+                    repository.obtenerFavoritos()
 
+                favoritos.clear()
+
+                favoritos.addAll(lista)
+
+                println(
+                    "FAVORITOS CARGADOS: ${favoritos.size}"
+                )
+
+            } catch (e: Exception) {
+
+                println(
+                    "ERROR CARGANDO FAVORITOS: ${e.message}"
+                )
+            }
         }
-
     }
-    fun comprobarFavorito(id: Int, onResult: (Boolean) -> Unit) {
+
+
+    // ============================================================
+    // GUARDAR FAVORITO
+    // ============================================================
+
+    fun guardarFavorito(
+        favorito: Favorito
+    ) {
 
         viewModelScope.launch {
 
-            val resultado = repository.esFavorito(id)
+            try {
 
-            onResult(resultado)
+                repository.guardarFavorito(favorito)
+
+                // Actualizamos la lista inmediatamente
+                val existe =
+                    favoritos.any {
+                        it.id == favorito.id
+                    }
+
+                if (!existe) {
+
+                    favoritos.add(favorito)
+
+                }
+
+                println(
+                    "FAVORITO GUARDADO: ${favorito.nombre}"
+                )
+
+            } catch (e: Exception) {
+
+                println(
+                    "ERROR GUARDANDO FAVORITO: ${e.message}"
+                )
+            }
         }
     }
 
 
+    // ============================================================
+    // ELIMINAR FAVORITO
+    // ============================================================
 
+    fun eliminarFavorito(
+        favorito: Favorito
+    ) {
+
+        viewModelScope.launch {
+
+            try {
+
+                repository.eliminarFavorito(favorito)
+
+                favoritos.removeAll {
+                    it.id == favorito.id
+                }
+
+                println(
+                    "FAVORITO ELIMINADO: ${favorito.nombre}"
+                )
+
+            } catch (e: Exception) {
+
+                println(
+                    "ERROR ELIMINANDO FAVORITO: ${e.message}"
+                )
+            }
+        }
+    }
+
+
+    // ============================================================
+    // COMPROBAR SI ES FAVORITO
+    // ============================================================
+
+    fun comprobarFavorito(
+        id: Int,
+        onResult: (Boolean) -> Unit
+    ) {
+
+        viewModelScope.launch {
+
+            try {
+
+                val resultado =
+                    repository.esFavorito(id)
+
+                onResult(resultado)
+
+            } catch (e: Exception) {
+
+                println(
+                    "ERROR COMPROBANDO FAVORITO: ${e.message}"
+                )
+
+                onResult(false)
+            }
+        }
+    }
 }

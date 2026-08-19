@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.rememberScrollState
+
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
@@ -31,7 +33,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -59,7 +60,6 @@ import com.example.appturismo.viewmodel.DestinoViewModel
 import com.example.appturismo.viewmodel.EstadoCarga
 import com.example.appturismo.viewmodel.UbicacionViewModel
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DestinosScreen(
@@ -68,7 +68,7 @@ fun DestinosScreen(
 ) {
 
     // ============================================================
-    // ESTADOS DE BÚSQUEDA Y FILTRO
+    // BÚSQUEDA
     // ============================================================
 
     var textoBusqueda by remember {
@@ -78,6 +78,7 @@ fun DestinosScreen(
     var categoriaSeleccionada by remember {
         mutableStateOf("Todos")
     }
+
     val scrollFiltros = rememberScrollState()
 
     val context = LocalContext.current
@@ -88,17 +89,21 @@ fun DestinosScreen(
 
     val ubicacionViewModel: UbicacionViewModel = viewModel()
 
-    val ubicacion by ubicacionViewModel.ubicacion.collectAsState()
+    val ubicacion by
+    ubicacionViewModel.ubicacion.collectAsState()
 
     // ============================================================
-    // DATOS DE DESTINOS
+    // DATOS
     // ============================================================
 
-    val destinosApi by viewModel.destinosApi.collectAsState()
+    val destinosApi by
+    viewModel.destinosApi.collectAsState()
 
-    val destinosCercanos by viewModel.destinosCercanos.collectAsState()
+    val destinosCercanos by
+    viewModel.destinosCercanos.collectAsState()
 
-    val estado by viewModel.estado.collectAsState()
+    val estado by
+    viewModel.estado.collectAsState()
 
     // ============================================================
     // PERMISO DE UBICACIÓN
@@ -106,27 +111,33 @@ fun DestinosScreen(
 
     val permisoUbicacionLauncher =
         rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.RequestMultiplePermissions()
+            contract =
+                ActivityResultContracts.RequestMultiplePermissions()
         ) { permisos ->
 
             val permisoPreciso =
-                permisos[Manifest.permission.ACCESS_FINE_LOCATION] == true
+                permisos[
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ] == true
 
             val permisoAproximado =
-                permisos[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+                permisos[
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ] == true
 
-            if (permisoPreciso || permisoAproximado) {
+            if (
+                permisoPreciso ||
+                permisoAproximado
+            ) {
 
-                ubicacionViewModel.obtenerUbicacion(context)
-
-            } else {
-
-                println("PERMISO GPS DENEGADO")
+                ubicacionViewModel.obtenerUbicacion(
+                    context
+                )
             }
         }
 
     // ============================================================
-    // CARGAR DESTINOS DE ARC GIS
+    // CARGAR DESTINOS
     // ============================================================
 
     LaunchedEffect(Unit) {
@@ -135,7 +146,7 @@ fun DestinosScreen(
     }
 
     // ============================================================
-    // CUANDO SE OBTIENE LA UBICACIÓN
+    // CUANDO OBTENEMOS UBICACIÓN
     // ============================================================
 
     LaunchedEffect(ubicacion) {
@@ -144,7 +155,8 @@ fun DestinosScreen(
 
             println(
                 "UBICACIÓN RECIBIDA: " +
-                        "${location.latitude}, ${location.longitude}"
+                        "${location.latitude}, " +
+                        "${location.longitude}"
             )
 
             viewModel.cargarDestinosCercanos(
@@ -156,7 +168,7 @@ fun DestinosScreen(
     }
 
     // ============================================================
-    // DESTINOS A MOSTRAR
+    // LISTA BASE
     // ============================================================
 
     val listaBase: List<Destino> =
@@ -165,114 +177,349 @@ fun DestinosScreen(
         } else {
             destinosApi
         }
+
+    // ============================================================
+    // FILTRAR DESTINOS
+    // ============================================================
+
+    val destinosFiltrados =
+        listaBase.filter { destino ->
+
+            // ----------------------------------------------------
+            // TEXTO DE BÚSQUEDA
+            // ----------------------------------------------------
+
+            val texto =
+                textoBusqueda.trim()
+
+            val coincideTexto =
+                texto.isEmpty() ||
+                        destino.nombre.contains(
+                            texto,
+                            ignoreCase = true
+                        ) ||
+                        destino.descripcion.contains(
+                            texto,
+                            ignoreCase = true
+                        ) ||
+                        destino.provincia.contains(
+                            texto,
+                            ignoreCase = true
+                        ) ||
+                        destino.categoria.contains(
+                            texto,
+                            ignoreCase = true
+                        )
+
+            // ----------------------------------------------------
+            // NORMALIZAR CATEGORÍA
+            // ----------------------------------------------------
+
+            val categoriaDestino =
+                destino.categoria
+                    .trim()
+                    .uppercase()
+                    .replace("Á", "A")
+                    .replace("É", "E")
+                    .replace("Í", "I")
+                    .replace("Ó", "O")
+                    .replace("Ú", "U")
+                    .replace("Ü", "U")
+
+            // ----------------------------------------------------
+            // NORMALIZAR NOMBRE
+            // ----------------------------------------------------
+
+            val nombreDestino =
+                destino.nombre
+                    .trim()
+                    .uppercase()
+                    .replace("Á", "A")
+                    .replace("É", "E")
+                    .replace("Í", "I")
+                    .replace("Ó", "O")
+                    .replace("Ú", "U")
+                    .replace("Ü", "U")
+
+            // ----------------------------------------------------
+            // FILTROS
+            // ----------------------------------------------------
+
+            val coincideCategoria =
+                when (categoriaSeleccionada) {
+
+                    // --------------------------------------------
+                    // TODOS
+                    // --------------------------------------------
+
+                    "Todos" -> true
+
+                    // --------------------------------------------
+                    // LAGUNA
+                    // --------------------------------------------
+
+                    "Laguna" ->
+
+                        categoriaDestino.contains("LAGUNA") ||
+                                nombreDestino.contains("LAGUNA")
+
+                    // --------------------------------------------
+                    // MONTAÑA
+                    // --------------------------------------------
+
+                    "Montaña" ->
+
+                        categoriaDestino.contains("MONTANA") ||
+                                categoriaDestino.contains("MONTAÑA") ||
+                                categoriaDestino.contains("CORDILLERA") ||
+                                categoriaDestino.contains("VOLCAN") ||
+                                categoriaDestino.contains("VOLCÁN") ||
+                                nombreDestino.contains("MONTANA") ||
+                                nombreDestino.contains("MONTAÑA") ||
+                                nombreDestino.contains("COTOPAXI")
+
+                    // --------------------------------------------
+                    // PLAYA
+                    // --------------------------------------------
+
+                    "Playa" ->
+
+                        categoriaDestino.contains("PLAYA") ||
+                                categoriaDestino.contains("COSTA") ||
+                                categoriaDestino.contains("MAR") ||
+                                nombreDestino.contains("PLAYA") ||
+                                nombreDestino.contains("MONTANITA")
+
+                    // --------------------------------------------
+                    // NATURALEZA
+                    // --------------------------------------------
+
+                    "Naturaleza" ->
+
+                        categoriaDestino.contains("NATURALEZA") ||
+                                categoriaDestino.contains(
+                                    "SITIOS NATURALES"
+                                ) ||
+                                categoriaDestino.contains(
+                                    "SITIO NATURAL"
+                                ) ||
+                                categoriaDestino.contains(
+                                    "AREA NATURAL"
+                                ) ||
+                                categoriaDestino.contains(
+                                    "AREAS NATURALES"
+                                ) ||
+                                categoriaDestino.contains(
+                                    "RESERVA"
+                                ) ||
+                                categoriaDestino.contains(
+                                    "PARQUE NACIONAL"
+                                ) ||
+                                categoriaDestino.contains(
+                                    "BOSQUE"
+                                )
+
+                    // --------------------------------------------
+                    // CULTURA
+                    // --------------------------------------------
+
+                    "Cultura" ->
+
+                        categoriaDestino.contains(
+                            "CULTURA"
+                        ) ||
+                                categoriaDestino.contains(
+                                    "MUSEO"
+                                ) ||
+                                categoriaDestino.contains(
+                                    "MUSEOS"
+                                ) ||
+                                categoriaDestino.contains(
+                                    "REALIZACIONES TECNICAS"
+                                ) ||
+                                categoriaDestino.contains(
+                                    "REALIZACION TECNICA"
+                                ) ||
+                                categoriaDestino.contains(
+                                    "HISTORICO"
+                                ) ||
+                                categoriaDestino.contains(
+                                    "ARQUEOLOG"
+                                )
+
+                    // --------------------------------------------
+                    // FOLKLORE
+                    // --------------------------------------------
+
+                    "Folklore" ->
+
+                        categoriaDestino.contains(
+                            "FOLKLORE"
+                        ) ||
+                                categoriaDestino.contains(
+                                    "FOLKLOR"
+                                ) ||
+                                categoriaDestino.contains(
+                                    "MANIFESTACION CULTURAL"
+                                ) ||
+                                categoriaDestino.contains(
+                                    "MANIFESTACIONES CULTURALES"
+                                ) ||
+                                categoriaDestino.contains(
+                                    "ETNOGRAF"
+                                ) ||
+                                categoriaDestino.contains(
+                                    "TRADICION"
+                                ) ||
+                                categoriaDestino.contains(
+                                    "TRADICIONES"
+                                )
+
+                    // --------------------------------------------
+                    // EVENTOS
+                    // --------------------------------------------
+
+                    "Eventos" ->
+
+                        categoriaDestino.contains(
+                            "EVENTO"
+                        ) ||
+                                categoriaDestino.contains(
+                                    "EVENTOS"
+                                ) ||
+                                categoriaDestino.contains(
+                                    "ACONTECIMIENTO"
+                                ) ||
+                                categoriaDestino.contains(
+                                    "ACONTECIMIENTOS PROGRAMADOS"
+                                ) ||
+                                categoriaDestino.contains(
+                                    "FESTIV"
+                                ) ||
+                                categoriaDestino.contains(
+                                    "FERIA"
+                                ) ||
+                                categoriaDestino.contains(
+                                    "FERIAS"
+                                )
+
+                    // --------------------------------------------
+                    // RECREACIÓN
+                    // --------------------------------------------
+
+                    "Recreación" -> {
+
+                        val tipoDestino =
+                            destino.descripcion
+                                .trim()
+                                .uppercase()
+                                .replace("Á", "A")
+                                .replace("É", "E")
+                                .replace("Í", "I")
+                                .replace("Ó", "O")
+                                .replace("Ú", "U")
+
+                        categoriaDestino.contains("RECREACION") ||
+                                categoriaDestino.contains("ESPARCIMIENTO") ||
+                                categoriaDestino.contains("RECREATIVO") ||
+                                categoriaDestino.contains("RECREATIVA") ||
+                                categoriaDestino.contains("CENTRO O LUGAR DE ESPARCIMIENTO") ||
+                                categoriaDestino.contains("CENTRO DE RECREACION") ||
+                                categoriaDestino.contains("CENTROS DE RECREACION") ||
+                                categoriaDestino.contains("LUGAR DE RECREACION") ||
+                                categoriaDestino.contains("LUGARES DE RECREACION") ||
+                                categoriaDestino.contains("DEPORT") ||
+                                categoriaDestino.contains("PARQUE RECREATIVO") ||
+                                categoriaDestino.contains("PARQUE") ||
+                                categoriaDestino.contains("BALNEARIO") ||
+                                categoriaDestino.contains("COMPLEJO") ||
+                                categoriaDestino.contains("PISCINA") ||
+                                categoriaDestino.contains("CANCHA") ||
+                                categoriaDestino.contains("ESTADIO") ||
+                                categoriaDestino.contains("CENTRO DEPORTIVO") ||
+                                tipoDestino.contains("RECREACION") ||
+                                tipoDestino.contains("ESPARCIMIENTO") ||
+                                tipoDestino.contains("RECREATIVO") ||
+                                tipoDestino.contains("RECREATIVA") ||
+                                tipoDestino.contains("DEPORT")
+                    }
+
+                    else -> true
+                }
+
+            // ----------------------------------------------------
+            // RESULTADO FINAL
+            // ----------------------------------------------------
+
+            coincideTexto &&
+                    coincideCategoria
+        }
+
+    // ============================================================
+    // MOSTRAR EN LOG LAS CATEGORÍAS
+    // ============================================================
+
     listaBase.forEach { destino ->
+
         println(
-            "CATEGORIA DESTINO: ${destino.nombre} -> ${destino.categoria}"
+            "DESTINO: ${destino.nombre} | " +
+                    "CATEGORIA: ${destino.categoria}"
         )
     }
 
     // ============================================================
-    // FILTRAR POR TEXTO Y CATEGORÍA
+    // CALCULAR DISTANCIA
     // ============================================================
 
-    val destinosFiltrados = listaBase.filter { destino ->
+    val destinosOrdenados =
+        remember(
+            destinosFiltrados,
+            ubicacion
+        ) {
 
-        val coincideTexto =
-            destino.nombre.contains(
-                textoBusqueda,
-                ignoreCase = true
-            ) ||
-                    destino.descripcion.contains(
-                        textoBusqueda,
-                        ignoreCase = true
-                    )
+            if (ubicacion != null) {
 
-        val coincideCategoria = when (categoriaSeleccionada) {
+                destinosFiltrados
+                    .map { destino ->
 
-            "Todos" -> true
+                        val distancia =
+                            DestinoRepository.calcularDistanciaKm(
 
-            "Naturaleza" ->
-                destino.categoria.contains(
-                    "SITIOS NATURALES",
-                    ignoreCase = true
-                )
+                                lat1 =
+                                    ubicacion!!.latitude,
 
-            "Cultura" ->
-                destino.categoria.contains(
-                    "MUSEOS",
-                    ignoreCase = true
-                ) ||
-                        destino.categoria.contains(
-                            "REALIZACIONES TÉCNICAS",
-                            ignoreCase = true
-                        )
+                                lon1 =
+                                    ubicacion!!.longitude,
 
-            "Eventos" ->
-                destino.categoria.contains(
-                    "ACONTECIMIENTOS PROGRAMADOS",
-                    ignoreCase = true
-                )
+                                lat2 =
+                                    destino.latitud,
 
-            "Folklore" ->
-                destino.categoria.contains(
-                    "FOLKLORE",
-                    ignoreCase = true
-                )
+                                lon2 =
+                                    destino.longitud
+                            )
 
-            "Recreación" ->
-                destino.categoria.contains(
-                    "CENTRO O LUGAR DE ESPARCIMIENTO",
-                    ignoreCase = true
-                )
+                        destino to distancia
+                    }
+                    .sortedBy {
+                        it.second
+                    }
 
-            else -> true
-        }
+            } else {
 
-        coincideTexto && coincideCategoria
-    }
+                destinosFiltrados.map { destino ->
 
-    // ============================================================
-    // CALCULAR DISTANCIA Y ORDENAR
-    // ============================================================
-
-    val destinosOrdenados = remember(
-        destinosFiltrados,
-        ubicacion
-    ) {
-
-        if (ubicacion != null) {
-
-            destinosFiltrados
-                .map { destino ->
-
-                    val distancia =
-                        DestinoRepository.calcularDistanciaKm(
-                            lat1 = ubicacion!!.latitude,
-                            lon1 = ubicacion!!.longitude,
-                            lat2 = destino.latitud,
-                            lon2 = destino.longitud
-                        )
-
-                    destino to distancia
+                    destino to null
                 }
-                .sortedBy { (_, distancia) ->
-                    distancia
-                }
-
-        } else {
-
-            destinosFiltrados.map { destino ->
-                destino to null
             }
         }
-    }
 
     // ============================================================
     // INTERFAZ
     // ============================================================
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier =
+            Modifier.fillMaxSize()
     ) {
 
         // ========================================================
@@ -283,10 +530,7 @@ fun DestinosScreen(
 
             title = {
                 Text("🌎 Guía Turística")
-            },
-
-            colors =
-                TopAppBarDefaults.centerAlignedTopAppBarColors()
+            }
         )
 
         // ========================================================
@@ -294,12 +538,15 @@ fun DestinosScreen(
         // ========================================================
 
         Text(
-            text = "Destinos Turísticos",
+
+            text =
+                "Destinos Turísticos",
 
             style =
                 MaterialTheme.typography.headlineMedium,
 
-            modifier = Modifier.padding(16.dp)
+            modifier =
+                Modifier.padding(16.dp)
         )
 
         // ========================================================
@@ -308,7 +555,8 @@ fun DestinosScreen(
 
         OutlinedTextField(
 
-            value = textoBusqueda,
+            value =
+                textoBusqueda,
 
             onValueChange = {
                 textoBusqueda = it
@@ -319,25 +567,36 @@ fun DestinosScreen(
             },
 
             leadingIcon = {
+
                 Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "Buscar"
+                    imageVector =
+                        Icons.Default.Search,
+
+                    contentDescription =
+                        "Buscar"
                 )
             },
 
             trailingIcon = {
 
-                if (textoBusqueda.isNotEmpty()) {
+                if (
+                    textoBusqueda.isNotEmpty()
+                ) {
 
                     IconButton(
+
                         onClick = {
                             textoBusqueda = ""
                         }
+
                     ) {
 
                         Icon(
-                            imageVector = Icons.Default.Clear,
-                            contentDescription = "Limpiar búsqueda"
+                            imageVector =
+                                Icons.Default.Clear,
+
+                            contentDescription =
+                                "Limpiar búsqueda"
                         )
                     }
                 }
@@ -345,50 +604,63 @@ fun DestinosScreen(
 
             singleLine = true,
 
-            shape = RoundedCornerShape(16.dp),
+            shape =
+                RoundedCornerShape(16.dp),
 
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = 16.dp
+                    )
         )
 
         // ========================================================
-        // FILTROS DE CATEGORÍA
+        // FILTROS
         // ========================================================
 
-
-
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(scrollFiltros)
-                .padding(
-                    horizontal = 16.dp,
-                    vertical = 8.dp
-                ),
+
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(
+                        scrollFiltros
+                    )
+                    .padding(
+                        horizontal = 16.dp,
+                        vertical = 8.dp
+                    ),
 
             horizontalArrangement =
                 Arrangement.spacedBy(8.dp)
         ) {
 
-            val categorias = listOf(
-                "Todos",
-                "Naturaleza",
-                "Cultura",
-                "Eventos",
-                "Folklore",
-                "Recreación"
-            )
+            val categorias =
+                listOf(
+                    "Todos",
+                    "Laguna",
+                    "Montaña",
+                    "Playa",
+                    "Naturaleza",
+                    "Cultura",
+                    "Folklore",
+                    "Eventos",
+                    "Recreación"
+                )
 
             categorias.forEach { categoria ->
 
                 FilterChip(
 
                     selected =
-                        categoriaSeleccionada == categoria,
+                        categoriaSeleccionada ==
+                                categoria,
 
                     onClick = {
-                        categoriaSeleccionada = categoria
+
+                        categoriaSeleccionada =
+                            categoria
                     },
 
                     label = {
@@ -408,58 +680,86 @@ fun DestinosScreen(
 
                 val permisoPreciso =
                     ContextCompat.checkSelfPermission(
+
                         context,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                    ) == PackageManager.PERMISSION_GRANTED
+
+                        Manifest.permission
+                            .ACCESS_FINE_LOCATION
+
+                    ) ==
+                            PackageManager.PERMISSION_GRANTED
 
                 val permisoAproximado =
                     ContextCompat.checkSelfPermission(
+
                         context,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    ) == PackageManager.PERMISSION_GRANTED
 
-                if (permisoPreciso || permisoAproximado) {
+                        Manifest.permission
+                            .ACCESS_COARSE_LOCATION
 
-                    ubicacionViewModel.obtenerUbicacion(context)
+                    ) ==
+                            PackageManager.PERMISSION_GRANTED
+
+                if (
+                    permisoPreciso ||
+                    permisoAproximado
+                ) {
+
+                    ubicacionViewModel
+                        .obtenerUbicacion(
+                            context
+                        )
 
                 } else {
 
-                    permisoUbicacionLauncher.launch(
-                        arrayOf(
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION
+                    permisoUbicacionLauncher
+                        .launch(
+
+                            arrayOf(
+
+                                Manifest.permission
+                                    .ACCESS_FINE_LOCATION,
+
+                                Manifest.permission
+                                    .ACCESS_COARSE_LOCATION
+                            )
                         )
-                    )
                 }
             },
 
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    horizontal = 16.dp,
-                    vertical = 8.dp
-                )
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = 16.dp,
+                        vertical = 8.dp
+                    )
         ) {
 
-            Text("📍 Buscar destinos cerca de mí")
+            Text(
+                "📍 Buscar destinos cerca de mí"
+            )
         }
 
         // ========================================================
-        // UBICACIÓN DETECTADA
+        // UBICACIÓN
         // ========================================================
 
         if (ubicacion != null) {
 
             Text(
-                text = "📍 Ubicación detectada",
+
+                text =
+                    "📍 Ubicación detectada",
 
                 style =
                     MaterialTheme.typography.bodyMedium,
 
-                modifier = Modifier.padding(
-                    horizontal = 16.dp,
-                    vertical = 4.dp
-                )
+                modifier =
+                    Modifier.padding(
+                        horizontal = 16.dp,
+                        vertical = 4.dp
+                    )
             )
         }
 
@@ -467,14 +767,22 @@ fun DestinosScreen(
         // CONTENIDO
         // ========================================================
 
-        when (val estadoActual = estado) {
+        when (
+            val estadoActual = estado
+        ) {
+
+            // ----------------------------------------------------
+            // CARGANDO
+            // ----------------------------------------------------
 
             EstadoCarga.Cargando -> {
 
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(24.dp),
+
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(24.dp),
 
                     horizontalAlignment =
                         Alignment.CenterHorizontally
@@ -483,22 +791,34 @@ fun DestinosScreen(
                     CircularProgressIndicator()
 
                     Text(
-                        text = "Cargando destinos...",
+
+                        text =
+                            "Cargando destinos...",
 
                         modifier =
-                            Modifier.padding(top = 8.dp)
+                            Modifier.padding(
+                                top = 8.dp
+                            )
                     )
                 }
             }
 
+            // ----------------------------------------------------
+            // ÉXITO
+            // ----------------------------------------------------
+
             EstadoCarga.Exito -> {
 
-                if (destinosOrdenados.isEmpty()) {
+                if (
+                    destinosOrdenados.isEmpty()
+                ) {
 
                     Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(24.dp),
+
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(24.dp),
 
                         horizontalAlignment =
                             Alignment.CenterHorizontally
@@ -510,11 +830,14 @@ fun DestinosScreen(
                         )
 
                         Text(
+
                             text =
                                 "Prueba con otra búsqueda o categoría.",
 
                             modifier =
-                                Modifier.padding(top = 8.dp)
+                                Modifier.padding(
+                                    top = 8.dp
+                                )
                         )
                     }
 
@@ -529,14 +852,18 @@ fun DestinosScreen(
                             PaddingValues(8.dp),
 
                         verticalArrangement =
-                            Arrangement.spacedBy(12.dp)
-
+                            Arrangement.spacedBy(
+                                12.dp
+                            )
                     ) {
 
                         items(
-                            items = destinosOrdenados,
 
-                            key = { (destino, _) ->
+                            items =
+                                destinosOrdenados,
+
+                            key = {
+                                    (destino, _) ->
                                 destino.id
                             }
 
@@ -544,7 +871,8 @@ fun DestinosScreen(
 
                             DestinoCard(
 
-                                destino = destino,
+                                destino =
+                                    destino,
 
                                 navController =
                                     navController,
@@ -557,12 +885,18 @@ fun DestinosScreen(
                 }
             }
 
+            // ----------------------------------------------------
+            // ERROR
+            // ----------------------------------------------------
+
             is EstadoCarga.Error -> {
 
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(24.dp),
+
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(24.dp),
 
                     horizontalAlignment =
                         Alignment.CenterHorizontally
@@ -574,11 +908,14 @@ fun DestinosScreen(
                     )
 
                     Text(
+
                         text =
                             estadoActual.mensaje,
 
                         modifier =
-                            Modifier.padding(top = 8.dp)
+                            Modifier.padding(
+                                top = 8.dp
+                            )
                     )
                 }
             }

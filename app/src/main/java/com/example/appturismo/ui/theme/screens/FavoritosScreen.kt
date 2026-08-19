@@ -3,13 +3,20 @@ package com.example.appturismo.ui.theme.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,7 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.shape.RoundedCornerShape
+import com.example.appturismo.R
 import com.example.appturismo.viewmodel.FavoritoViewModel
 
 @Composable
@@ -51,68 +58,161 @@ fun FavoritosScreen(
             ) {
 
                 Text(
-                    text = "No tienes destinos favoritos todavía."
+                    text = "❤️"
+                )
+
+                Text(
+                    text = "No tienes destinos favoritos todavía.",
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+
+                Text(
+                    text = "Agrega destinos usando el corazón ❤️",
+                    modifier = Modifier.padding(top = 4.dp)
                 )
             }
 
         } else {
 
-            LazyColumn {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
 
-                items(favoritoViewModel.favoritos) { favorito ->
+                contentPadding =
+                    androidx.compose.foundation.layout.PaddingValues(
+                        8.dp
+                    ),
+
+                verticalArrangement =
+                    Arrangement.spacedBy(10.dp)
+            ) {
+
+                items(
+                    items = favoritoViewModel.favoritos,
+                    key = { favorito -> favorito.id }
+                ) { favorito ->
 
                     Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(
-                                horizontal = 8.dp,
-                                vertical = 6.dp
-                            ),
-                        shape = RoundedCornerShape(12.dp)
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = CardDefaults.cardElevation(
+                            defaultElevation = 4.dp
+                        )
                     ) {
 
                         Column {
 
-                            // UNA SOLA IMAGEN
+                            // =================================================
+                            // IMAGEN
+                            // =================================================
+
                             Image(
                                 painter = painterResource(
-                                    id = favorito.imagen
+                                    id = obtenerImagenValida(
+                                        favorito.imagen
+                                    )
                                 ),
-                                contentDescription = favorito.nombre,
+
+                                contentDescription =
+                                    favorito.nombre,
+
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(180.dp)
                                     .clip(
                                         RoundedCornerShape(
-                                            topStart = 12.dp,
-                                            topEnd = 12.dp
+                                            topStart = 16.dp,
+                                            topEnd = 16.dp
                                         )
                                     ),
-                                contentScale = ContentScale.Crop
+
+                                contentScale =
+                                    ContentScale.Crop
                             )
 
-                            // INFORMACIÓN DEL DESTINO
-                            Column(
-                                modifier = Modifier.padding(16.dp)
+                            // =================================================
+                            // INFORMACIÓN
+                            // =================================================
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+
+                                verticalAlignment =
+                                    Alignment.CenterVertically
                             ) {
 
-                                Text(
-                                    text = favorito.nombre,
-                                    style = MaterialTheme.typography.titleLarge
-                                )
+                                Column(
+                                    modifier = Modifier.weight(1f)
+                                ) {
 
-                                Text(
-                                    text = "📍 ${favorito.provincia}"
-                                )
+                                    Text(
+                                        text = favorito.nombre,
+                                        style =
+                                            MaterialTheme
+                                                .typography
+                                                .titleLarge
+                                    )
 
-                                Text(
-                                    text = "🏷️ ${favorito.categoria}"
-                                )
+                                    Text(
+                                        text =
+                                            "📍 ${favorito.provincia}",
+                                        modifier =
+                                            Modifier.padding(top = 4.dp)
+                                    )
+
+                                    Text(
+                                        text =
+                                            "🏷️ ${favorito.categoria}",
+                                        modifier =
+                                            Modifier.padding(top = 4.dp)
+                                    )
+                                }
+
+                                IconButton(
+                                    onClick = {
+
+                                        favoritoViewModel
+                                            .eliminarFavorito(
+                                                favorito
+                                            )
+                                    }
+                                ) {
+
+                                    Icon(
+                                        imageVector =
+                                            Icons.Default.Delete,
+
+                                        contentDescription =
+                                            "Eliminar favorito",
+
+                                        tint =
+                                            MaterialTheme
+                                                .colorScheme
+                                                .error
+                                    )
+                                }
                             }
                         }
                     }
                 }
             }
         }
+    }
+}
+
+
+// ================================================================
+// IMAGEN SEGURA
+// ================================================================
+
+private fun obtenerImagenValida(
+    imagen: Int
+): Int {
+
+    return if (imagen != 0) {
+        imagen
+    } else {
+        R.drawable.naturaleza
     }
 }
