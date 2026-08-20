@@ -5,3 +5,4 @@ app/build/
 app/release/
 .gradle/
 local.properties
+app/*.jks
