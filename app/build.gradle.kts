@@ -76,7 +76,6 @@ dependencies {
 
     // Location
     implementation(libs.play.services.location)
-
     // DataStore
     implementation(libs.androidx.datastore.preferences)
 
