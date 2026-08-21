@@ -16,10 +16,22 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        signingConfigs {
+            create("release") {
+                storeFile = file("app-turismo-release.jks")
+                storePassword = project.findProperty("RELEASE_STORE_PASSWORD") as String
+                keyAlias = "appturismo"
+                keyPassword = project.findProperty("RELEASE_KEY_PASSWORD") as String
+            }
+        }
+
+
     }
 
     buildTypes {
         release {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

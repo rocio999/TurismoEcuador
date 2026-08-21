@@ -6,3 +6,5 @@ app/release/
 .gradle/
 local.properties
 app/*.jks
+gradle.properties
+*.keystore
