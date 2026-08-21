@@ -27,7 +27,6 @@ La meta de AppTurismo es proporcionar una herramienta móvil sencilla para descu
 
 - Kotlin
 - Jetpack Compose
-- Material 3
 - Android Studio
 - Arquitectura MVVM
 - Room Database
@@ -54,7 +53,6 @@ La estructura fundamental del proyecto incluye:
 
 ###  Estructura del proyecto
 
-```text
 com.example.appturismo
 ├── data.database
 │   ├── datastore
@@ -108,6 +106,7 @@ com.example.appturismo
 │
 ├── AppTurismoApp
 └── MainActivity
+
 //Organización del proyecto//
 --Datos
 
@@ -124,8 +123,8 @@ Se emplea Almacenamiento de Datos para guardar las preferencias de la aplicació
 
 Incluye:
 
-Preferencias
-DatosPreferencias
+--Preferencias
+--DatosPreferencias
 --Base de Datos Room
 
 Room se usa para administrar el almacenamiento local.
@@ -217,6 +216,33 @@ El proyecto permite crear:
 
 APK: archivo que se puede instalar en dispositivos Android.
 AAB: Android App Bundle firmado para su distribución.
+DIAGRAMA DE ARQUITECTURA 
+La aplicación AppTurismo utiliza una arquitectura basada en MVVM
+ y el patrón Repository, separando la interfaz de usuario, 
+ la lógica de presentación y las fuentes de datos.
+
+![AppTurismo.drawio.diagrama.png](imagenes/AppTurismo.drawio.diagrama.png)
+## Capturas de pantalla
+
+### Pantalla principal
+
+![Pantalla principal](imagenes/inicio.png)
+
+### Lista de destinos y filtros 
+
+![Lista de destinos](imagenes/destinos.png)
+
+### Detalle del destino
+
+![Detalle del destino](imagenes/detalle.png)
+
+### Favoritos
+
+![Favoritos](imagenes/favoritos.png)
+
+### Ubicación, confirmacion y muestra de ubicacion
+
+![Ubicación](imagenes/ubicacion.png)
 
 --Proyecto académico
 
@@ -233,3 +259,4 @@ Arquitectura: MVVM
 Base de datos: Room
 
 Preferencias: DataStore
+

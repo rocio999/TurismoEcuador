@@ -80,9 +80,8 @@ fun DestinoCard(
 
         Column {
 
-            // ====================================================
             // IMAGEN
-            // ====================================================
+
 
             Image(
                 painter = painterResource(
@@ -108,9 +107,9 @@ fun DestinoCard(
                 modifier = Modifier.padding(16.dp)
             ) {
 
-                // =================================================
+
                 // NOMBRE + FAVORITO
-                // =================================================
+
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -179,9 +178,9 @@ fun DestinoCard(
                     }
                 }
 
-                // =================================================
+
 // INFORMACIÓN
-// =================================================
+
 
                 Column(
                     modifier = Modifier.fillMaxWidth()
