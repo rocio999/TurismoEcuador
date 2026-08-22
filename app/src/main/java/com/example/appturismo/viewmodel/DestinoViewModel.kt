@@ -13,9 +13,9 @@ import kotlinx.coroutines.launch
 
 class DestinoViewModel : ViewModel() {
 
-    // ============================================================
+
     // DESTINOS DE ARC GIS
-    // ============================================================
+
 
     private val _destinosApi =
         MutableStateFlow<List<Destino>>(emptyList())
@@ -24,9 +24,9 @@ class DestinoViewModel : ViewModel() {
         _destinosApi.asStateFlow()
 
 
-    // ============================================================
+
     // DESTINOS CERCANOS
-    // ============================================================
+
 
     private val _destinosCercanos =
         MutableStateFlow<List<Destino>>(emptyList())
@@ -35,9 +35,9 @@ class DestinoViewModel : ViewModel() {
         _destinosCercanos.asStateFlow()
 
 
-    // ============================================================
+
     // ESTADO
-    // ============================================================
+
 
     private val _estado =
         MutableStateFlow<EstadoCarga>(
@@ -48,9 +48,9 @@ class DestinoViewModel : ViewModel() {
         _estado.asStateFlow()
 
 
-    // ============================================================
+
     // CARGAR TODOS LOS DESTINOS
-    // ============================================================
+
 
     fun cargarDestinosApi() {
 
@@ -108,9 +108,9 @@ class DestinoViewModel : ViewModel() {
     }
 
 
-    // ============================================================
+
     // DESTINOS CERCANOS
-    // ============================================================
+
 
     fun cargarDestinosCercanos(
         latitud: Double,
@@ -220,9 +220,9 @@ class DestinoViewModel : ViewModel() {
     }
 
 
-    // ============================================================
+
     // CONVERTIR ARC GIS → DESTINO
-    // ============================================================
+
 
     private fun convertirDestino(
         index: Int,
@@ -232,9 +232,8 @@ class DestinoViewModel : ViewModel() {
         val datos = feature.attributes
 
 
-        // ========================================================
+
         // UBICACIÓN
-        // ========================================================
 
         val latitud =
             feature.geometry?.y ?: 0.0
@@ -243,9 +242,8 @@ class DestinoViewModel : ViewModel() {
             feature.geometry?.x ?: 0.0
 
 
-        // ========================================================
         // NOMBRE
-        // ========================================================
+
 
         val nombreDestino =
             datos["NOMBRE"]
@@ -257,9 +255,9 @@ class DestinoViewModel : ViewModel() {
                 ?: "Sin nombre"
 
 
-        // ========================================================
+
         // CATEGORÍA ORIGINAL
-        // ========================================================
+
 
         val categoriaOriginal =
             datos["CATEGORIA"]
@@ -271,9 +269,9 @@ class DestinoViewModel : ViewModel() {
                 ?: "Sin categoría"
 
 
-        // ========================================================
+
         // DESCRIPCIÓN
-        // ========================================================
+
 
         val descripcion =
             datos["TIPO"]
@@ -295,9 +293,8 @@ class DestinoViewModel : ViewModel() {
                 ?: "Sin descripción disponible"
 
 
-        // ========================================================
         // NORMALIZAR TODO EL TEXTO
-        // ========================================================
+
 
         val textoDestino =
             normalizarTexto(
@@ -314,15 +311,11 @@ class DestinoViewModel : ViewModel() {
             )
 
 
-        // ========================================================
         // DETERMINAR CATEGORÍA REAL
-        // ========================================================
 
         val categoriaFinal = when {
 
-            // ----------------------------------------------------
             // LAGUNA
-            // ----------------------------------------------------
 
             textoDestino.contains("LAGUNA") ||
                     textoDestino.contains("LAGO") -> {
@@ -331,9 +324,8 @@ class DestinoViewModel : ViewModel() {
             }
 
 
-            // ----------------------------------------------------
             // PLAYA
-            // ----------------------------------------------------
+
 
             textoDestino.contains("PLAYA") ||
                     textoDestino.contains("BALNEARIO") -> {
@@ -342,9 +334,7 @@ class DestinoViewModel : ViewModel() {
             }
 
 
-            // ----------------------------------------------------
             // MONTAÑA
-            // ----------------------------------------------------
 
             textoDestino.contains("MONTANA") ||
                     textoDestino.contains("VOLCAN") ||
@@ -355,9 +345,7 @@ class DestinoViewModel : ViewModel() {
             }
 
 
-            // ----------------------------------------------------
             // FOLKLORE
-            // ----------------------------------------------------
 
             categoriaNormalizada.contains("FOLKLORE") ||
                     categoriaNormalizada.contains("FOLCLOR") ||
@@ -368,9 +356,7 @@ class DestinoViewModel : ViewModel() {
             }
 
 
-            // ----------------------------------------------------
             // EVENTOS
-            // ----------------------------------------------------
 
             categoriaNormalizada.contains("EVENTO") ||
                     categoriaNormalizada.contains("ACONTECIMIENTO") ||
@@ -387,9 +373,7 @@ class DestinoViewModel : ViewModel() {
             }
 
 
-            // ----------------------------------------------------
             // RECREACIÓN
-            // ----------------------------------------------------
 
             categoriaNormalizada.contains("RECREACION") ||
                     categoriaNormalizada.contains("ESPARCIMIENTO") ||
@@ -409,9 +393,7 @@ class DestinoViewModel : ViewModel() {
             }
 
 
-            // ----------------------------------------------------
             // CULTURA
-            // ----------------------------------------------------
 
             categoriaNormalizada.contains("CULTURA") ||
                     categoriaNormalizada.contains("MUSEO") ||
@@ -425,9 +407,7 @@ class DestinoViewModel : ViewModel() {
             }
 
 
-            // ----------------------------------------------------
             // NATURALEZA
-            // ----------------------------------------------------
 
             categoriaNormalizada.contains("NATURALEZA") ||
                     categoriaNormalizada.contains(
@@ -438,10 +418,7 @@ class DestinoViewModel : ViewModel() {
                 "Naturaleza"
             }
 
-
-            // ----------------------------------------------------
             // POR DEFECTO
-            // ----------------------------------------------------
 
             else -> {
 
@@ -449,10 +426,8 @@ class DestinoViewModel : ViewModel() {
             }
         }
 
-
-        // ========================================================
         // IMAGEN SEGÚN CATEGORÍA
-        // ========================================================
+
 
         val imagenDestino = when (categoriaFinal) {
 
@@ -485,9 +460,9 @@ class DestinoViewModel : ViewModel() {
         }
 
 
-        // ========================================================
+
         // LOG
-        // ========================================================
+
 
         println("====================================")
         println("DESTINO: $nombreDestino")
@@ -497,9 +472,9 @@ class DestinoViewModel : ViewModel() {
         println("====================================")
 
 
-        // ========================================================
+
         // ID
-        // ========================================================
+
 
         val idGenerado =
             datos["OBJECTID"]
@@ -511,9 +486,9 @@ class DestinoViewModel : ViewModel() {
                 ?: (index + 1000)
 
 
-        // ========================================================
+
         // PROVINCIA
-        // ========================================================
+
 
         val provinciaDestino =
             datos["PROVINCIA"]
@@ -525,9 +500,9 @@ class DestinoViewModel : ViewModel() {
                 ?: "Sin provincia"
 
 
-        // ========================================================
+
         // CREAR DESTINO
-        // ========================================================
+
 
         return Destino(
 
@@ -562,9 +537,9 @@ class DestinoViewModel : ViewModel() {
     }
 
 
-    // ============================================================
+
     // FUNCIÓN PARA NORMALIZAR TEXTO
-    // ============================================================
+
 
     private fun normalizarTexto(
         texto: String
@@ -582,9 +557,9 @@ class DestinoViewModel : ViewModel() {
     }
 
 
-    // ============================================================
+
     // DESTINOS LOCALES
-    // ============================================================
+
 
     fun obtenerDestinos(): List<Destino> {
 
@@ -592,9 +567,9 @@ class DestinoViewModel : ViewModel() {
     }
 
 
-    // ============================================================
+
     // OBTENER DESTINO POR ID
-    // ============================================================
+
 
     fun obtenerDestino(
         id: Int
@@ -612,10 +587,8 @@ class DestinoViewModel : ViewModel() {
     }
 }
 
-
-// ================================================================
 // ESTADO DE CARGA
-// ================================================================
+
 
 sealed interface EstadoCarga {
 

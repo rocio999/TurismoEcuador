@@ -66,9 +66,7 @@ fun DestinosScreen(
     viewModel: DestinoViewModel
 ) {
 
-    // ============================================================
     // BÚSQUEDA
-    // ============================================================
 
     var textoBusqueda by remember {
         mutableStateOf("")
@@ -82,18 +80,18 @@ fun DestinosScreen(
 
     val context = LocalContext.current
 
-    // ============================================================
+
     // VIEWMODEL DE UBICACIÓN
-    // ============================================================
+
 
     val ubicacionViewModel: UbicacionViewModel = viewModel()
 
     val ubicacion by
     ubicacionViewModel.ubicacion.collectAsState()
 
-    // ============================================================
+
     // DATOS
-    // ============================================================
+
 
     val destinosApi by
     viewModel.destinosApi.collectAsState()
@@ -104,9 +102,9 @@ fun DestinosScreen(
     val estado by
     viewModel.estado.collectAsState()
 
-    // ============================================================
+
     // PERMISO DE UBICACIÓN
-    // ============================================================
+
 
     val permisoUbicacionLauncher =
         rememberLauncherForActivityResult(
@@ -135,18 +133,18 @@ fun DestinosScreen(
             }
         }
 
-    // ============================================================
+
     // CARGAR DESTINOS
-    // ============================================================
+
 
     LaunchedEffect(Unit) {
 
         viewModel.cargarDestinosApi()
     }
 
-    // ============================================================
+
     // CUANDO OBTENEMOS UBICACIÓN
-    // ============================================================
+
 
     LaunchedEffect(ubicacion) {
 
@@ -166,9 +164,9 @@ fun DestinosScreen(
         }
     }
 
-    // ============================================================
+
     // LISTA BASE
-    // ============================================================
+
 
     val listaBase: List<Destino> =
         if (destinosCercanos.isNotEmpty()) {
@@ -177,16 +175,15 @@ fun DestinosScreen(
             destinosApi
         }
 
-    // ============================================================
+
     // FILTRAR DESTINOS
-    // ============================================================
+
 
     val destinosFiltrados =
         listaBase.filter { destino ->
 
-            // ----------------------------------------------------
+
             // TEXTO DE BÚSQUEDA
-            // ----------------------------------------------------
 
             val texto =
                 textoBusqueda.trim()
@@ -210,9 +207,7 @@ fun DestinosScreen(
                             ignoreCase = true
                         )
 
-            // ----------------------------------------------------
             // NORMALIZAR CATEGORÍA
-            // ----------------------------------------------------
 
             val categoriaDestino =
                 destino.categoria
@@ -225,9 +220,7 @@ fun DestinosScreen(
                     .replace("Ú", "U")
                     .replace("Ü", "U")
 
-            // ----------------------------------------------------
             // NORMALIZAR NOMBRE
-            // ----------------------------------------------------
 
             val nombreDestino =
                 destino.nombre
@@ -240,31 +233,23 @@ fun DestinosScreen(
                     .replace("Ú", "U")
                     .replace("Ü", "U")
 
-            // ----------------------------------------------------
             // FILTROS
-            // ----------------------------------------------------
 
             val coincideCategoria =
                 when (categoriaSeleccionada) {
 
-                    // --------------------------------------------
                     // TODOS
-                    // --------------------------------------------
 
                     "Todos" -> true
 
-                    // --------------------------------------------
                     // LAGUNA
-                    // --------------------------------------------
 
                     "Laguna" ->
 
                         categoriaDestino.contains("LAGUNA") ||
                                 nombreDestino.contains("LAGUNA")
 
-                    // --------------------------------------------
                     // MONTAÑA
-                    // --------------------------------------------
 
                     "Montaña" ->
 
@@ -277,9 +262,8 @@ fun DestinosScreen(
                                 nombreDestino.contains("MONTAÑA") ||
                                 nombreDestino.contains("COTOPAXI")
 
-                    // --------------------------------------------
                     // PLAYA
-                    // --------------------------------------------
+
 
                     "Playa" ->
 
@@ -289,9 +273,7 @@ fun DestinosScreen(
                                 nombreDestino.contains("PLAYA") ||
                                 nombreDestino.contains("MONTANITA")
 
-                    // --------------------------------------------
                     // NATURALEZA
-                    // --------------------------------------------
 
                     "Naturaleza" ->
 
@@ -318,9 +300,7 @@ fun DestinosScreen(
                                     "BOSQUE"
                                 )
 
-                    // --------------------------------------------
                     // CULTURA
-                    // --------------------------------------------
 
                     "Cultura" ->
 
@@ -346,9 +326,7 @@ fun DestinosScreen(
                                     "ARQUEOLOG"
                                 )
 
-                    // --------------------------------------------
                     // FOLKLORE
-                    // --------------------------------------------
 
                     "Folklore" ->
 
@@ -374,9 +352,8 @@ fun DestinosScreen(
                                     "TRADICIONES"
                                 )
 
-                    // --------------------------------------------
+
                     // EVENTOS
-                    // --------------------------------------------
 
                     "Eventos" ->
 
@@ -402,9 +379,7 @@ fun DestinosScreen(
                                     "FERIAS"
                                 )
 
-                    // --------------------------------------------
                     // RECREACIÓN
-                    // --------------------------------------------
 
                     "Recreación" -> {
 
@@ -446,17 +421,13 @@ fun DestinosScreen(
                     else -> true
                 }
 
-            // ----------------------------------------------------
             // RESULTADO FINAL
-            // ----------------------------------------------------
 
             coincideTexto &&
                     coincideCategoria
         }
 
-    // ============================================================
     // MOSTRAR EN LOG LAS CATEGORÍAS
-    // ============================================================
 
     listaBase.forEach { destino ->
 
@@ -466,9 +437,9 @@ fun DestinosScreen(
         )
     }
 
-    // ============================================================
+
     // CALCULAR DISTANCIA
-    // ============================================================
+
 
     val destinosOrdenados =
         remember(
@@ -512,18 +483,17 @@ fun DestinosScreen(
             }
         }
 
-    // ============================================================
+
     // INTERFAZ
-    // ============================================================
+
 
     Column(
         modifier =
             Modifier.fillMaxSize()
     ) {
 
-        // ========================================================
         // BARRA SUPERIOR
-        // ========================================================
+
 
         CenterAlignedTopAppBar(
 
@@ -532,9 +502,8 @@ fun DestinosScreen(
             }
         )
 
-        // ========================================================
         // TÍTULO
-        // ========================================================
+
 
         Text(
 
@@ -548,9 +517,8 @@ fun DestinosScreen(
                 Modifier.padding(16.dp)
         )
 
-        // ========================================================
+
         // BUSCADOR
-        // ========================================================
 
         OutlinedTextField(
 
@@ -614,9 +582,9 @@ fun DestinosScreen(
                     )
         )
 
-        // ========================================================
+
         // FILTROS
-        // ========================================================
+
 
         Row(
 
@@ -669,9 +637,9 @@ fun DestinosScreen(
             }
         }
 
-        // ========================================================
+
         // BOTÓN GPS
-        // ========================================================
+
 
         Button(
 
@@ -740,9 +708,9 @@ fun DestinosScreen(
             )
         }
 
-        // ========================================================
+
         // UBICACIÓN
-        // ========================================================
+
 
         if (ubicacion != null) {
 
@@ -762,17 +730,16 @@ fun DestinosScreen(
             )
         }
 
-        // ========================================================
         // CONTENIDO
-        // ========================================================
+
 
         when (
             val estadoActual = estado
         ) {
 
-            // ----------------------------------------------------
+
             // CARGANDO
-            // ----------------------------------------------------
+
 
             EstadoCarga.Cargando -> {
 
@@ -802,9 +769,7 @@ fun DestinosScreen(
                 }
             }
 
-            // ----------------------------------------------------
             // ÉXITO
-            // ----------------------------------------------------
 
             EstadoCarga.Exito -> {
 
@@ -884,9 +849,7 @@ fun DestinosScreen(
                 }
             }
 
-            // ----------------------------------------------------
             // ERROR
-            // ----------------------------------------------------
 
             is EstadoCarga.Error -> {
 

@@ -101,9 +101,8 @@ fun FavoritosScreen(
 
                         Column {
 
-                            // =================================================
                             // IMAGEN
-                            // =================================================
+
 
                             Image(
                                 painter = painterResource(
@@ -129,9 +128,8 @@ fun FavoritosScreen(
                                     ContentScale.Crop
                             )
 
-                            // =================================================
                             // INFORMACIÓN
-                            // =================================================
+
 
                             Row(
                                 modifier = Modifier
@@ -202,9 +200,8 @@ fun FavoritosScreen(
 }
 
 
-// ================================================================
+
 // IMAGEN SEGURA
-// ================================================================
 
 private fun obtenerImagenValida(
     imagen: Int

@@ -47,9 +47,9 @@ fun HomeScreen(navController: NavHostController) {
             .background(MaterialTheme.colorScheme.background)
     ) {
 
-        // ==============================
+
         // PORTADA
-        // ==============================
+
 
         Box(
             modifier = Modifier
@@ -121,9 +121,9 @@ fun HomeScreen(navController: NavHostController) {
             }
         }
 
-        // ==============================
+
         // CONTENIDO
-        // ==============================
+
 
         Column(
             modifier = Modifier
@@ -154,9 +154,9 @@ fun HomeScreen(navController: NavHostController) {
                 modifier = Modifier.height(18.dp)
             )
 
-            // ==============================
+
             // EXPLORAR
-            // ==============================
+
 
             HomeOptionCard(
                 icon = {
@@ -176,9 +176,9 @@ fun HomeScreen(navController: NavHostController) {
                 modifier = Modifier.height(10.dp)
             )
 
-            // ==============================
+
             // FAVORITOS
-            // ==============================
+
 
             HomeOptionCard(
                 icon = {
@@ -198,9 +198,9 @@ fun HomeScreen(navController: NavHostController) {
                 modifier = Modifier.height(10.dp)
             )
 
-            // ==============================
+
             // UBICACIÓN
-            // ==============================
+
 
             HomeOptionCard(
                 icon = {
@@ -220,9 +220,9 @@ fun HomeScreen(navController: NavHostController) {
                 modifier = Modifier.height(10.dp)
             )
 
-            // ==============================
+
             // AJUSTES
-            // ==============================
+
 
             HomeOptionCard(
                 icon = {

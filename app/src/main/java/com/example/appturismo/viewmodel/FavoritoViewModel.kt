@@ -12,17 +12,17 @@ class FavoritoViewModel(
     private val repository: FavoritoRepository
 ) : ViewModel() {
 
-    // ============================================================
+
     // LISTA DE FAVORITOS
-    // ============================================================
+
 
     val favoritos: SnapshotStateList<Favorito> =
         mutableStateListOf()
 
 
-    // ============================================================
+
     // CARGAR FAVORITOS
-    // ============================================================
+
 
     fun cargarFavoritos() {
 
@@ -51,9 +51,9 @@ class FavoritoViewModel(
     }
 
 
-    // ============================================================
+
     // GUARDAR FAVORITO
-    // ============================================================
+
 
     fun guardarFavorito(
         favorito: Favorito
@@ -91,9 +91,9 @@ class FavoritoViewModel(
     }
 
 
-    // ============================================================
+
     // ELIMINAR FAVORITO
-    // ============================================================
+
 
     fun eliminarFavorito(
         favorito: Favorito
@@ -123,9 +123,9 @@ class FavoritoViewModel(
     }
 
 
-    // ============================================================
+
     // COMPROBAR SI ES FAVORITO
-    // ============================================================
+
 
     fun comprobarFavorito(
         id: Int,

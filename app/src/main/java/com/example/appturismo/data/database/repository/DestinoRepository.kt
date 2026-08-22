@@ -57,9 +57,9 @@ object DestinoRepository {
         )
     }
 
-    // ============================================================
+
     // LLAMADAS A LA API
-    // ============================================================
+
 
     suspend fun obtenerDestinosApi(): DestinoApiResponse =
         RetrofitClient.apiService.obtenerDestinos()
@@ -74,9 +74,8 @@ object DestinoRepository {
             distance = radioKm
         )
 
-    // ============================================================
+
     // CÁLCULO DE DISTANCIA HAVERSINE (LOCAL/RESPALDO)
-    // ============================================================
 
     fun calcularDistanciaKm(
         lat1: Double, lon1: Double,

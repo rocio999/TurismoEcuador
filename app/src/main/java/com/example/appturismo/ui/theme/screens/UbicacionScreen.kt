@@ -54,10 +54,8 @@ fun UbicacionScreen(
         mutableStateOf(false)
     }
 
-
-    // ============================================================
     // SOLICITAR PERMISOS
-    // ============================================================
+
 
     val permisoLauncher =
         rememberLauncherForActivityResult(
@@ -88,9 +86,9 @@ fun UbicacionScreen(
         }
 
 
-    // ============================================================
+
     // SOLICITAR UBICACIÓN
-    // ============================================================
+
 
     fun solicitarUbicacion() {
 
@@ -127,9 +125,9 @@ fun UbicacionScreen(
     }
 
 
-    // ============================================================
+
     // ABRIR MAPA DEL TELÉFONO
-    // ============================================================
+
 
     fun abrirMapa() {
 
@@ -149,9 +147,9 @@ fun UbicacionScreen(
         val latitud = location.latitude
         val longitud = location.longitude
 
-        // ============================================================
+
         // INTENT PARA GOOGLE MAPS
-        // ============================================================
+
 
         val googleMapsUri = Uri.parse(
             "geo:$latitud,$longitud?q=$latitud,$longitud"
@@ -177,10 +175,10 @@ fun UbicacionScreen(
             error: ActivityNotFoundException
         ) {
 
-            // ========================================================
+
             // SI GOOGLE MAPS NO ESTÁ INSTALADO
             // ABRIR GOOGLE MAPS EN EL NAVEGADOR
-            // ========================================================
+
 
             val navegadorUri = Uri.parse(
                 "https://www.google.com/maps/search/?api=1" +
@@ -212,9 +210,9 @@ fun UbicacionScreen(
     }
 
 
-    // ============================================================
+
     // INTERFAZ
-    // ============================================================
+
 
     Column(
 
@@ -230,9 +228,9 @@ fun UbicacionScreen(
             Arrangement.Center
     ) {
 
-        // ========================================================
+
         // TÍTULO
-        // ========================================================
+
 
         Text(
 
@@ -250,9 +248,9 @@ fun UbicacionScreen(
         )
 
 
-        // ========================================================
+
         // ESTADO
-        // ========================================================
+
 
         if (ubicacion != null) {
 
@@ -271,9 +269,9 @@ fun UbicacionScreen(
             )
 
 
-            // ====================================================
+
             // ABRIR MAPA
-            // ====================================================
+
 
             Button(
 
@@ -307,9 +305,9 @@ fun UbicacionScreen(
             )
 
 
-            // ====================================================
+
             // OBTENER UBICACIÓN
-            // ====================================================
+
 
             Button(
 
@@ -328,9 +326,9 @@ fun UbicacionScreen(
         }
 
 
-        // ========================================================
+
         // PERMISO DENEGADO
-        // ========================================================
+
 
         if (permisoDenegado) {
 
