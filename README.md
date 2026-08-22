@@ -581,21 +581,39 @@ Para ejecutar AppTurismo se requiere:
 
 ---
 
-# APK y AAB
+## 📦 APK y AAB
 
 El proyecto permite generar los archivos necesarios para la instalación y distribución de la aplicación.
 
-## APK
+### 📱 APK
 
 El archivo APK permite instalar directamente la aplicación en un dispositivo Android para realizar pruebas.
 
-## AAB
+**Archivo generado:**
+
+`app-release.apk`
+
+### 📦 AAB
 
 El archivo AAB (Android App Bundle) corresponde al formato utilizado para la distribución de aplicaciones Android.
 
-Se generó un AAB firmado como parte del proceso de despliegue del proyecto.
+**Archivo generado:**
 
----
+`app-release.aab`
+
+El AAB fue generado mediante el proceso de release y cuenta con firma digital para su distribución.
+
+### 🔐 Verificación de firma
+
+El archivo APK fue verificado mediante `apksigner` y presenta:
+
+- **APK Signature Scheme v2: true**
+- **Number of signers: 1**
+
+El archivo AAB fue verificado mediante `jarsigner` y el resultado fue:
+
+
+jar verified.
 
 # Git y control de versiones
 
@@ -624,5 +642,5 @@ Durante el desarrollo se realizaron diferentes commits para registrar los avance
 ---
 
 # Autor
-
+Rocio Quizhpi
 Proyecto académico desarrollado para la asignatura de **Aplicaciones Móviles**.
